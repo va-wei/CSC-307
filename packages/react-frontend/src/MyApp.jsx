@@ -5,12 +5,6 @@ import Form from "./Form";
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  // function removeOneCharacter(index) {
-  //   const updated = characters.filter((character, i) => {
-  //     return i !== index;
-  //   });
-  //   setCharacters(updated);
-  // }
 
   function removeOneCharacter(id) {
     fetch(`http://localhost:8000/users/${id}`, {
@@ -40,7 +34,7 @@ function MyApp() {
         if (response.status == 201) {
           response.json() // parse response body as JSON
             .then((data) => {
-              setCharacters([...characters, person]) // update state
+              setCharacters([...characters, data]) // update state
             }); 
         } else {
           console.error("User not created, status code: ", response.status);
