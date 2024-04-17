@@ -37,6 +37,15 @@ const users = {
   ]
 };
 
+function generateRandomId() {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let id = "";
+  for (let i = 0; i < 6; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
 const findUserByName = (name) => {
   return users["users_list"].filter(
     (user) => user["name"] === name
@@ -49,19 +58,22 @@ const findUsersByNameAndJob = (name, job) => {
   );
 };
 
-
 const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
 
 const addUser = (user) => {
+  const userId = generateRandomId();
+  user.id = userId;
   users["users_list"].push(user);
   return user;
 };
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
+  const userId = generateRandomId();
+  userToAdd.id = userId; 
   addUser(userToAdd);
-  res.send();
+  res.status(201).send(userToAdd); // ret updated representation of object 
 });
 
 app.get("/users/:id", (req, res) => {
@@ -74,17 +86,17 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
-app.delete("/users/:id", (req, res) => {
-  const id = req.params.id;
-  let result = findUserById(id);
-  if (result === undefined) { // if the user DNE
-    res.status(404).send("Resource not found.");
-  } else { 
-    const index = users["users_list"].indexOf(result); // get index of user
-    users["users_list"].splice(index, 1); // remove from array
-    res.send(`User with id ${id} has been deleted`);
-  }
-});
+  app.delete("/users/:id", (req, res) => {
+    const id = req.params.id.toString();
+    let result = findUserById(id);
+    if (result === undefined) { // if the user DNE
+      res.status(404).send("Resource not found.");
+    } else { 
+      const index = users["users_list"].indexOf(result); // get index of user
+      users["users_list"].splice(index, 1); // remove from array
+      res.status(204).send();
+    }
+  });
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
@@ -101,7 +113,6 @@ app.get("/users", (req, res) => {
     res.send(users); // all users if no filter given
   }
 });
-
 
 app.listen(port, () => {
   console.log(

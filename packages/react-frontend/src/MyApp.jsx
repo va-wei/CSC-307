@@ -5,16 +5,47 @@ import Form from "./Form";
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
+  // function removeOneCharacter(index) {
+  //   const updated = characters.filter((character, i) => {
+  //     return i !== index;
+  //   });
+  //   setCharacters(updated);
+  // }
+
+  function removeOneCharacter(id) {
+    fetch(`http://localhost:8000/users/${id}`, {
+      method: 'DELETE'
+    })
+    .then(response => {
+      if (response.status === 204) { // successful delete request
+        // const updated = characters.filter((_, i) => i != id);
+        // setCharacters(updated);
+        const updatedCharacters = characters.filter(character => character.id !== id);
+        setCharacters(updatedCharacters);
+      } else if (response.status === 404) {
+        console.error("User not found. Nothing as deleted.");
+      } else {
+        console.error("Error deleting user.");
+      }
+    })
+    .catch(error => {
+      console.error("Error", error);
     });
-    setCharacters(updated);
   }
+  
 
   function updateList(person) { 
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((response) => {
+        if (response.status == 201) {
+          response.json() // parse response body as JSON
+            .then((data) => {
+              setCharacters([...characters, person]) // update state
+            }); 
+        } else {
+          console.error("User not created, status code: ", response.status);
+        }
+      })
       .catch((error) => {
         console.log(error);
       })
@@ -26,7 +57,7 @@ function MyApp() {
   }
 
   function postUser(person) {
-    const promise = fetch("Http://localhost:8000/users", {
+    const promise = fetch("http://localhost:8000/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
