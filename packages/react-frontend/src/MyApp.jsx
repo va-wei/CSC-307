@@ -12,8 +12,6 @@ function MyApp() {
     })
     .then(response => {
       if (response.status === 204) { // successful delete request
-        // const updated = characters.filter((_, i) => i != id);
-        // setCharacters(updated);
         const updatedCharacters = characters.filter(character => character.id !== id);
         setCharacters(updatedCharacters);
       } else if (response.status === 404) {
