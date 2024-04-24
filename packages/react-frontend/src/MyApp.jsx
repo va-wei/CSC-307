@@ -12,7 +12,7 @@ function MyApp() {
     })
     .then(response => {
       if (response.status === 204) { // successful delete request
-        const updatedCharacters = characters.filter(character => character.id !== id);
+        const updatedCharacters = characters.filter(character => character._id !== id);
         setCharacters(updatedCharacters);
       } else if (response.status === 404) {
         console.error("User not found. Nothing as deleted.");
