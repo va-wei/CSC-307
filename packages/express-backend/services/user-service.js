@@ -29,11 +29,11 @@ function findUserByName(name) {
 };
 
 function findUserByJob(job) {
-    return User.find({ job: job });
+    return userModel.find({ job: job });
 }
 
 function findUsersByNameAndJob(name, job) {
-    return User.find({ name: name, job: job });
+    return userModel.find({ name: name, job: job });
 }
 
 function findUserById(id) {
